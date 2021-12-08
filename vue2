@@ -1,0 +1,294 @@
+*** 生命周期
+生命周期函数就是 vue 实例在某一个时间点会自动执行的函数
+beforeCreate (没有 this.$el, 没有数据）
+created（没有 this.$el, 有数据）
+beforeMount（页面还没有被渲染，可以获取 this.$el, 但是没有渲染出内容）
+mounted（页面挂载之后，已成功渲染）
+beforeUpdate（当数据发生改变，还没有渲染之前）
+updated（当数据发生改变，页面渲染之后）
+beforeDestroy/destroyed
+
+keep-alive组件会触发的生命周期:
+activated (当页面/组件重新被展示的时候执行）
+Deactivated （当页面被隐藏/或被替换成新的页面的时候执行）
+
+
+
+*** 计算属性（computed）
+计算属性有缓存机制，当计算属性依赖的值没有发生变化时，便不会重新执行
+首次进入就会执行
+
+
+
+*** 监听器（watch）
+被监听值变化了才会执行
+首次进入不会执行
+
+
+
+*** 操作数组可以重新渲染视图的方法
+Vue 将被侦听的数组的变更方法进行了包裹，所以它们也将会触发视图更新
+1.push pop shift unshift splice sort reverse（变更方法）
+2.也可以改变数组的引用（替换方法）
+3.$set
+你可能认为 方法2 这将导致 Vue 丢弃现有 DOM 并重新渲染整个列表。幸运的是，事实并非如此。
+Vue 为了使得 DOM 元素得到最大范围的重用而实现了一些智能的启发式方法，所以用一个含有相同元素的数组去替换原来的数组是非常高效的操作。
+当然，改变数组的方法不止以上这些，但是其他方法并不会被 Vue 监听，也就不会改变视图
+
+
+
+*** 操作对象可以重新渲染视图的方法
+1.$set
+2.也可以改变对象的引用（替换方法）
+
+
+
+*** 事件修饰符
+.stop 防止事件继续传播，防止事件向上冒泡
+.prevent 提交事件不再重载页面，阻止一些默认事件
+.self 要求 click 事件只有在 e.target = e.currentTarget 的时候才会执行
+.once 点击事件只会触发一次
+.capture 正常的 click 事件是遵循冒泡的规则，从内到外，capture 修饰符可以让事件遵循捕获的规则，从外到内
+
+Vue 还对应 addEventListener 中的 passive 选项提供了 .passive 修饰符
+<div @scroll.passive="onScroll">...</div>
+这个 .passive 修饰符尤其能够提升移动端的性能。
+
+
+*** 按键修饰符
+.enter
+.tab
+.delete
+.esc
+.space
+.up
+.down
+.left
+.right
+
+
+*** 鼠标修饰符
+.left
+.right
+.middle
+
+
+*** 系统修饰符
+.ctrl
+.alt
+.shift
+.meta
+
+
+*** 表单中 v-model 修饰符
+.lazy
+.number
+.trim
+
+
+*** .exact 修饰符
+<!-- 即使 Alt 或 Shift 被一同按下时也会触发 -->
+<button @click.ctrl="onClick">A</button>
+
+<!-- 有且只有 Ctrl 被按下的时候才触发 -->
+<button @click.ctrl.exact="onCtrlClick">A</button>
+
+<!-- 没有任何系统修饰符被按下的时候才触发 -->
+<button @click.exact="onClick">A</button>
+
+
+
+*** 使用组件的一些细节点
+1. is 一个多标签的界面中使用 is attribute 来切换不同的组件，动态组件
+2. 子组件的 data 必须是个函数，根实例上的 data 可以是个对象
+3. ref 使用在标签上时， this.$refs.name 获取的是 dom 节点；使用在组件上时，获取的是子组件的引用，也就是子组件的实例。
+
+
+
+*** 将原生事件绑定到组件上，使用 .native 修饰符
+
+
+
+*** vue 非父子组件传值（bus/总线/发布订阅模式/观察者模式）
+
+
+
+*** 动态组件 <component :is="currentTabComponent"></component>
+<!-- 失活的组件将会被缓存！-->
+<keep-alive>
+  <component v-bind:is="currentTabComponent"></component>
+</keep-alive>
+include - 字符串或正则表达，只有匹配的组件会被缓存
+exclude - 字符串或正则表达式，任何匹配的组件都不会被缓存
+
+
+
+*** v-once 指令代表标签内部的内容只渲染一次
+
+
+
+*** vue 中的动画
+<transition
+  :duration="1000" // 设置过渡持续时间
+  type="transition" // 设置动画时间以那个为准 animation/transition
+  name="fade"
+  appear // 设置初始渲染的过渡
+  enter-active-class="animated swing fade-enter-active"
+  leave-active-class="animated swing fade-leave-active"
+  appear-active-class="animated swing"
+>
+  <p>Hi</p>
+</transition>
+
+自定义过渡 class 类名:
+enter-from-class
+enter-active-class
+enter-to-class
+leave-from-class
+leave-active-class
+leave-to-class
+
+Js钩子:
+<transition
+  @before-enter="beforeEnter"
+  @enter="enter"
+  @after-enter="afterEnter"
+  @enter-cancelled="enterCancelled"
+  @before-leave="beforeLeave"
+  @leave="leave"
+  @after-leave="afterLeave"
+  @leave-cancelled="leaveCancelled"
+  :css="false"
+>
+  <!-- ... -->
+</transition>
+
+多个元素的过渡：
+可以添加 mode 属性控制过渡模式
+<transition name="fade" mode="out-in">
+  <!-- ... the buttons ... -->
+</transition>
+in-out：新元素先进行过渡，完成之后当前元素过渡离开。
+out-in：当前元素先进行过渡，完成之后新元素过渡进入。
+
+
+列表的排序过渡:
+<transition-group> 组件还有一个特殊之处。不仅可以进入和离开动画，还可以改变定位。要使用这个新功能只需了解新增的 v-move class，它会在元素的改变定位的过程中应用。像之前的类名一样，可以通过 name attribute 来自定义前缀，也可以通过 move-class attribute 手动设置。
+
+
+
+*** 路由就是根据网址的不同，返回不同的内容
+*** 单页应用：首屏加载慢，但是页面切换快，SEO差
+*** 多页应用：首屏加载快，但是页面切换慢，SEO好
+
+
+
+*** 实现宽高比的css
+{
+  width: 100%;
+  height: 0;
+  Padding-bottom: 30%
+}
+
+
+
+*** 当 style 标签上使用了 scoped 时, 如何修改引用的第三方库的样式 >>>
+例如 .wrapper >>> .swiper-pagination
+
+
+
+*** 在 webpack 的启动命令中添加 --host 0.0.0.0 可以网页在手机上通过 ip 访问
+"scripts": {
+    "dev": "webpack-dev-server --host 0.0.0.0 --inline --progress --config build/webpack.dev.conf.js",
+},
+
+
+
+*** babel-polifill 使浏览器可以访问 ES6 语法
+
+
+
+*** vuex:
+创建一个 store
+组件从 store.state 里面取数据
+
+如果是异步的：
+组件通过 dispatch 调用 action
+this.$store.dispatch('change'); // 第一步: vuex 派发一个名为 'change' 的 action；
+
+action 通过 commit 调用 mutations
+
+// dispatch 和 actions 做关联
+actions: {
+  // 第二步: 感知到 change 这个 action， 执行 store 中 actions下面的 change 方法
+  change(store) {
+     // store actions 里面的方法第一个参数对应的是 store
+     // 第三步: 提交一个 commit 触发 mutation
+     store.commit('change')
+  }
+}
+
+// commit 和 mutations 做关联
+mutations: {
+  // 第四步: 对应的 mutation 被执行
+  change(state) {
+     // state mutations 里面的方法第一个参数对应的是 state
+     // 第五步: mutation 里面修改数据
+     state.name = 'lee';
+  }
+}
+
+如果是同步的：
+组件可以直接通过 commit 调用 mutations 修改 state(省略上面的第二步）
+
+getters 有点类似于组件中的 computed 的作用，可以根据 state 里面的数据算出一些新的数据，可以避免一些数据的冗余
+Module：由于使用单一状态树，应用的所有状态会集中到一个比较大的对象。当应用变得非常复杂时，store 对象就有可能变得相当臃肿。为了解决以上问题，Vuex 允许我们将 store 分割成模块（module）。每个模块拥有自己的 state、mutation、action、getter、甚至是嵌套子模块。
+还有一些辅助函数，可以帮助我们更快捷的使用 vuex: mapState, mapGetters, mapMutations, mapActions
+
+
+
+*** 以下配置可以解决移动端点击出现300ms延迟的问题
+html {
+  touch-action: manipulation;
+}
+
+
+
+*** 当切换到新路由时，想要页面滚到顶部，或者是保持原先的滚动位置，就像重新加载页面那样
+const router = new VueRouter({
+  routes: [...],
+  scrollBehavior (to, from, savedPosition) {
+    // return 期望滚动到哪个的位置
+    return { x: 0, y: 0 } // 回到顶部
+  }
+})
+
+
+
+Vue中好用的插件：
+轮播：vue-awesome-swiper
+滚动：better-scroll
+
+
+
+*** vue-cli（vue脚手架有2，3，4版本啦）各版本的区别：
+
+vue-cli@2 的使用：
+全局安装：npm install vue-cli -g
+创建项目：vue init webpack projectname
+启动项目：npm run dev
+
+@vue/cli@3， @vue/cli@4 的使用：
+全局安装：npm install @vue/cli -g
+创建项目：vue create project name
+启动项目：npm run serve
+
+也可以局部安装 ，去掉 -g
+
+项目结构的变化：
+vue-cli3/cli4中移除了配置文件目录：config 和 build 文件夹。
+同时移除了 static 静态文件夹，新增了 public 文件夹，将 index.html 移动到 public 中。
+
+设置环境变量的变化：
+vue-cli3构建的项目中默认只有development模式和production模式，默认的NODE_ENV分别是development和production，很多配置也只依据NODE_ENV区分这2种模式
+vue-cli4 和 vue-cli3在环境变量设置和使用上差别不大。
