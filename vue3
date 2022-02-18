@@ -355,13 +355,26 @@ updated => onUpdated
 beforeUnmount => onBeforeUnmount
 unmounted => onUnmounted
 
+keep-alive
+activated => onAcivated
+deactivated => onDeactivated
+
 *** 为什么 setup 中没有提供 beforeCreate 和 created 生命周期函数 ？
 因为 setup 的执行就在 beforeCreate 和 created 之间，需要写在这两个生命周期里的函数，可以直接在 setup 中写
 因为 setup 是围绕 beforeCreate 和 created 生命周期钩子运行的，所以不需要显式地定义它们。换句话说，在这些钩子中编写的任何代码都应该直接在 setup 函数中编写。
 
 *** setup 中新增的生命周期函数
-onRenderTracked 每次渲染重新收集响应式依赖的时候就会执行
+onRenderTracked 每次渲染重新收集响应式依赖的时候就会执行 return 几个响应式数据，就会收集执行几次
 onRenderTriggered 每次触发页面重新渲染的时候会执行
+onErrorCaptured 当捕获到来自子孙组件的一个异常时执行
+
+执行顺序(初次渲染）
+onBeforeMount (开始渲染） ---> onRenderTracked（收集依赖） ---> onMounted（渲染完成）
+更新的时候
+onRenderTriggered（状态触发） ---> onBeforeUpdate (开始更新）---> onRenderTracked（收集依赖） ---> onUpdated (更新完成）
+
+
+
 
 
 
