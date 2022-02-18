@@ -159,7 +159,7 @@ app.component('custom-form', {
 
 
 
-*** mixin 混入
+*** mixin 混入（vue2 中也有）
 组件 data，methods 优先级高于 mixin data，methods 优先级
 例如 methods、components 和 directives，将被合并为同一个对象。两个对象键名冲突时，取组件对象的键值对。
 生命周期函数，先执行 mixin 里面的，再执行组件里面的
